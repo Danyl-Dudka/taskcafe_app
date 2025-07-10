@@ -1,0 +1,99 @@
+.taskcafe-modal .ant-modal {
+    width: 37.5rem !important;
+    border-radius: 16px !important;
+    background: linear-gradient(135deg, #3c426b, #515d9f) !important;
+    color: #e8eaf6 !important;
+    font-family: 'Inter', system-ui, sans-serif;
+    box-shadow: 0 16px 48px rgba(20, 24, 56, 0.85) !important;
+    padding: 28px 36px !important;
+    transition: box-shadow 0.3s ease;
+}
+
+.taskcafe-modal .ant-modal:hover {
+    box-shadow: 0 24px 64px rgba(20, 24, 56, 0.95) !important;
+}
+
+.taskcafe-modal .ant-modal-title {
+    font-weight: 700 !important;
+    font-size: 1.7rem !important;
+    color: #a3a9ff !important;
+    border-bottom: 2px solid #6f75b7 !important;
+    padding-bottom: 0.9rem !important;
+    margin-bottom: 1.2rem;
+    letter-spacing: 0.04em;
+    user-select: none;
+    text-shadow: 0 1px 4px rgba(110, 115, 183, 0.7);
+}
+
+.taskcafe-view-content {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.view-row {
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    background: linear-gradient(135deg, #c4c6db, #7d87f5);
+    border-left: 4px solid #6366f1;
+    border-radius: 14px;
+    padding: 16px 20px;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.2), 0 2px 8px rgba(0, 0, 0, 0.35);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: default;
+    color: #e8eaf6;
+}
+
+
+.view-row:hover {
+    background-color: #5a5fff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+    color: #ffffff;
+}
+
+.view-row:hover .label,
+.view-row:hover .value {
+    color: #ffffff;
+}
+
+.label {
+    font-weight: 600;
+    color: #8e97f9;
+    min-width: 140px;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+    letter-spacing: 0.06rem;
+    text-transform: uppercase;
+    user-select: none;
+}
+
+.value {
+    color: #e8eaf6;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 1rem;
+    line-height: 1.4;
+    flex: 1 1 auto;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+.user_select {
+    display: flex;
+    width: 40%;
+    box-sizing: border-box;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #41466e;
+    border: 2 px solid #6f75b7;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.user_select:hover {
+    border-color: #8e97f9;
+    background-color: #4b5285;
+}
+
+.deadline {
+    color: red;
+}

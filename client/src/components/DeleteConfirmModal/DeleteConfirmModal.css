@@ -1,0 +1,12 @@
+.delete_modal_title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #ff4d4f;
+    margin: 0;
+}
+
+.delete_modal_paragraph {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #4c5f3b;
+}

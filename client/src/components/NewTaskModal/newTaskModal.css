@@ -1,0 +1,210 @@
+.ant-modal-mask {
+    background-color: rgba(10, 10, 30, 0.85) !important;
+    backdrop-filter: blur(6px);
+}
+
+.ant-modal {
+    border-radius: 14px !important;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.8) !important;
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: #41466e !important;
+    color: #e8eaf6 !important;
+    padding: 24px 32px !important;
+}
+
+.ant-modal-title {
+    font-weight: 700 !important;
+    font-size: 1.6rem !important;
+    color: #8e97f9 !important;
+    border-bottom: 1px solid #5a5f8a !important;
+    padding-bottom: 0.85rem !important;
+    margin-bottom: 1rem;
+}
+
+.ant-modal-body {
+    padding: 0 !important;
+}
+
+.ant-input {
+    border-radius: 10px !important;
+    border: 1.5px solid #6a6f9f !important;
+    background-color: #343a6b !important;
+    color: #e8eaf6 !important;
+    padding: 0.7rem 1.2rem !important;
+    font-size: 1.1rem !important;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+    width: 100%;
+}
+
+.ant-input::placeholder {
+    color: #a0a5ce !important;
+}
+
+.ant-input:focus,
+.ant-input-focused {
+    border-color: #8a9efc !important;
+    box-shadow: 0 0 10px rgb(138 158 252 / 0.7) !important;
+    background-color: #3c4481 !important;
+    color: #f0f3ff !important;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.modal-actions .ant-btn {
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 0.6rem 1.8rem;
+    box-shadow: none;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    color: #e8eaf6;
+    border: none;
+}
+
+.modal-actions .ant-btn-primary {
+    background-color: #6a72c3;
+    border-color: #6a72c3;
+}
+
+.modal-actions .ant-btn-primary:hover,
+.modal-actions .ant-btn-primary:focus {
+    background-color: #4f56a1;
+    border-color: #4f56a1;
+    box-shadow: 0 0 14px rgb(79 86 161 / 0.9);
+}
+
+.ant-picker input::placeholder {
+    font-size: 18px;
+}
+
+.modal-actions .ant-btn-default {
+    background-color: transparent;
+    border: 1.8px solid #8a8fbb;
+    color: #aeb3d1;
+}
+
+.modal-actions .ant-btn-default:hover {
+    border-color: #b4b8df;
+    color: #d1d4f0;
+    background-color: #444a8e;
+}
+
+.modal_actions {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.reset_confirm_paragraph {
+    color: red;
+}
+
+.project_description {
+    margin-top: 1rem;
+    width: 320px;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+.select_priority {
+    width: 100%;
+    margin-top: 1rem;
+    color: black;
+}
+
+.select_date {
+    width: 100%;
+    height: 50px;
+    font-size: 18px;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.taskcafe-modal .ant-modal {
+    width: 1500px !important;
+}
+
+.taskcafe-modal .taskcafe-view-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px 8px;
+    background-color: #fff;
+    border-radius: 12px;
+}
+
+.taskcafe-modal .view-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 12px 16px;
+    background-color: #f9fafc;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.taskcafe-modal .label {
+    font-weight: 600;
+    color: #555;
+    min-width: 140px;
+    flex-shrink: 0;
+}
+
+.taskcafe-modal .value {
+    color: #222;
+    font-size: 16px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.error {
+    margin-bottom: 8px;
+    color: red;
+}
+
+.select_deadline {
+    width: 100%;
+    max-width: 320px;
+    padding: 8px 12px;
+    height: 40px;
+    font-size: 16px;
+    border: 2px solid #1890ff;
+    border-radius: 6px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    background-color: #fff;
+    margin-top: 20px;
+}
+
+.select_deadline:hover {
+    border-color: #40a9ff;
+    box-shadow: 0 0 5px rgba(24, 144, 255, 0.5);
+}
+
+.select_deadline:focus,
+.select_deadline:focus-visible {
+    border-color: #096dd9;
+    box-shadow: 0 0 8px rgba(9, 109, 217, 0.7);
+    outline: none;
+}
+
+.select_deadline .ant-picker-input>input {
+    font-size: 16px;
+    color: #333;
+    padding: 6px 8px;
+}
+
+.select_deadline .ant-picker-clear {
+    color: #999;
+}
+
+.select_deadline .ant-picker-suffix {
+    color: #1890ff;
+}
