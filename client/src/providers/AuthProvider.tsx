@@ -1,20 +1,23 @@
-import LoginForm from "../components/LoginForm/LoginForm";
 import { AuthContext } from "../content";
 import { useEffect, useState, type ReactNode } from "react";
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
     const [isAuth, setIsAuth] = useState(false);
+    const [fullname, setFullname] = useState('');
 
     useEffect(() => {
-        const storedAuth = localStorage.getItem('isAuth');
-        if (storedAuth === "true") {
+        const token = sessionStorage.getItem('token')
+        const name = sessionStorage.getItem('fullname')
+        if (token) {
             setIsAuth(true)
+            if (name) {
+                setFullname(name)
+            }
         }
-        <LoginForm />
     }, [])
 
     return (
-        <AuthContext.Provider value={{ isAuth, setIsAuth }}>
+        <AuthContext.Provider value={{ isAuth, setIsAuth, fullname, setFullname }}>
             {children}
         </AuthContext.Provider>
     )

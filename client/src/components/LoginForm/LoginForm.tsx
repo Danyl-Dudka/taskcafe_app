@@ -11,18 +11,32 @@ export default function LoginForm() {
 
     const navigate = useNavigate();
 
-    const handleLogin = () => {
-        const users = JSON.parse(localStorage.getItem('users') || '{}');
-        const user = users[login];
-        if (user && user.password === password) {
-            toast.success('Login successful!')
-            setTimeout(() => {
-                setIsAuth(true);
-                localStorage.setItem('isAuth', 'true');
-            }, 1500)
-        } else {
-            toast.error('Incorrect login or password!')
-            setError('Incorrect login or password!')
+    const handleLogin = async () => {
+        try {
+            const response = await fetch('http://localhost:3000/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ login, password })
+            })
+
+            const data = await response.json();
+
+            if (response.ok) {
+                toast.success(data.message || 'Login successful!')
+                setTimeout(() => {
+                    sessionStorage.setItem('token', data.token)
+                    sessionStorage.setItem('fullname', data.fullname)
+                    setIsAuth(true)
+                    setLogin('');
+                    setPassword('');
+                    setError('');
+                }, 1500)
+            } else {
+                toast.error(data.message || 'Incorrect login or password!')
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            toast.error('Server error')
         }
     };
 

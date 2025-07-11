@@ -8,48 +8,35 @@ export default function SettingsPage() {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [succesMessage, setSuccessMessage] = useState<string>('');
 
-  const login = localStorage.getItem('login');
+  const token = sessionStorage.getItem('token')
 
-  const handleChangePassword = (e: React.FormEvent) => {
+  const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const users = JSON.parse(localStorage.getItem('users') || '{}');
-
-    if (!login || !users[login]) {
-      setErrorMessage('User not found');
+    if (!token) {
+      setErrorMessage('No token found, please log in again.');
       setSuccessMessage('');
       return;
     }
 
-    const user = users[login];
+    try {
+      const response = await fetch('http://localhost:3000/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ currentPassword, newPassword, confirmNewPassword })
+      })
 
-    if (user.password !== currentPassword) {
-      setErrorMessage('Current password is incorrect!')
-      setSuccessMessage('');
-      return;
+      const data = await response.json();
+      if (response.ok) {
+        setSuccessMessage(data.message || 'Password changed successfully!')
+        setErrorMessage('');
+      }
+      else {
+        setErrorMessage(data.message || 'Data is incorrect!')
+        setSuccessMessage('');
+      }
+    } catch (error) {
+      console.error('Error:', error);
     }
-
-    if (newPassword !== confirmNewPassword) {
-      setErrorMessage('New passwords do not match!')
-      setSuccessMessage('');
-      return;
-    }
-
-    if (newPassword === currentPassword) {
-      setErrorMessage('New passwords must be different!')
-      setSuccessMessage('');
-      return;
-    }
-
-    users[login].password = newPassword;
-    localStorage.setItem('users', JSON.stringify(users));
-    setSuccessMessage('Password changed successfully!');
-    setErrorMessage('');
-
-    setCurrentPasword('');
-    setNewPassword('');
-    setConfirmNewPassword('');
-
   }
 
   return (

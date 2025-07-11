@@ -8,11 +8,12 @@ import { Dropdown, Space } from 'antd';
 export default function Header() {
     const navigate = useNavigate();
     const handleSignOut = () => {
-        localStorage.removeItem('isAuth');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('fullname');
         window.location.reload();
     }
 
-    const fullname = 'admin';
+    const fullname = sessionStorage.getItem('fullname') || 'User';
 
     const initials = fullname.split(' ').map(name => name[0]?.toUpperCase()).join('');
 
