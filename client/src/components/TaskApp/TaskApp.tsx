@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { CircleX } from 'lucide-react';
 import { Funnel, ArrowUpDown } from 'lucide-react';
 import { Cascader, Select } from 'antd';
+import { toast } from "react-toastify";
 export default function TaskApp() {
     const LOCAL_STORAGE_KEY = 'taskapp_projects';
     const [projects, setProjects] = useState<ProjectFormData[]>([]);
@@ -28,11 +29,43 @@ export default function TaskApp() {
     const [showSortingOptions, setShowSortingOptions] = useState<boolean>(false);
     const [query, setQuery] = useState<string>('');
     const { Option } = Select;
+
     useEffect(() => {
-        const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-        if (saved) {
-            setProjects(JSON.parse(saved))
+        const fetchedTasks = async () => {
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+                console.log('Token is expired!')
+                return
+            }
+            try {
+                const response = await fetch('http://localhost:3000/getTasks', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                })
+
+                if (!response.ok) {
+                    console.log('Failed to fetch data!');
+                    return;
+                }
+
+                const data = await response.json();
+
+                const mappedTasks = data.map((task: any) => ({
+                    id: task._id,
+                    name: task.projectName,
+                    description: task.projectDescription,
+                    priority: task.projectPriority,
+                    status: task.projectStatus ?? 'todo',
+                    date: task.projectDate,
+                    deadline: task.projectDeadline
+                }))
+
+                setProjects(mappedTasks)
+            } catch (error) {
+
+            }
         }
+        fetchedTasks();
     }, [])
 
     const showCreateModal = () => {
@@ -57,30 +90,48 @@ export default function TaskApp() {
     }
 
 
-    const handleAddProject = () => {
-        if (projectName.trim()) {
-
-
-            const newProject: ProjectFormData = {
-                id: uuidv4(),
-                name: projectName,
-                description,
-                priority,
-                status,
-                date: date?.toISOString() ?? '',
-                deadline: deadline?.toISOString() ?? '',
-            }
-            const updatedProjects = [...projects, newProject];
-            setProjects(updatedProjects);
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedProjects));
-            setProjectName('');
-            setDescription('');
-            setPriority('');
-            setStatus('todo');
-            setDate(dayjs());
-            setDeadline(null)
-            setIsModalOpen(false)
+    const handleAddProject = async () => {
+        const token = sessionStorage.getItem('token');
+        if (!token) {
+            console.log('Token is expired!');
+            return;
         }
+        const newProject: ProjectFormData = {
+            id: uuidv4(),
+            name: projectName,
+            description,
+            priority,
+            status,
+            date: date?.toISOString() ?? '',
+            deadline: deadline?.toISOString() ?? '',
+        }
+
+        try {
+            const response = await fetch('http://localhost:3000/addTask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({
+                    projectName: newProject.name,
+                    projectDescription: newProject.description,
+                    projectPriority: newProject.priority,
+                    projectDeadline: newProject.deadline,
+                    projectStatus: newProject.status,
+                    projectDate: newProject.date ?? '',
+                })
+            })
+
+            const data = await response.json();
+            if (response.ok) {
+                toast.success(data.message || 'Task was successfully created!');
+                setIsModalOpen(false)
+            }
+        } catch (error) {
+            toast.error('Unexpected error');
+            console.log('Server error')
+        }
+
+
+
     }
 
     const handleResetProjects = () => {

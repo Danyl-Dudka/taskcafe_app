@@ -3,6 +3,7 @@ import cors from "cors";
 import "dotenv/config";
 import mongoose from "mongoose";
 import { User } from "./models/User.js";
+import { Task } from "./models/Task.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { authenticateToken } from "./middleWares/auth.js";
@@ -46,7 +47,7 @@ app.post("/login", async (req, res) => {
       return res.status(400).send({ message: "Login is incorrect!" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password)
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).send({ message: "Password is incorrect!" });
     }
@@ -104,6 +105,45 @@ app.post("/settings", authenticateToken, async (req, res) => {
     console.error("Error changing password:", error);
     res.status(500).json({ message: "Server error!" });
   }
+});
+
+app.post("/addTask", authenticateToken, async (req, res) => {
+  const userId = req.user.userId;
+  const {
+    projectName,
+    projectDescription,
+    projectPriority,
+    projectStatus,
+    projectDate,
+    projectDeadline,
+  } = req.body;
+  try {
+    const newTask = new Task({
+      projectName,
+      projectDescription,
+      projectPriority,
+      projectStatus: projectStatus || "todo",
+      projectDate: projectDate ? new Date(projectDate) : new Date(),
+      projectDeadline: projectDeadline ? new Date(projectDeadline) : null,
+      user: userId,
+    });
+    await newTask.save();
+    res.json({ message: "Task was created successfully!" });
+  } catch (error) {
+    console.error("Task is not created:", error);
+    res.status(500).send({ message: "Error" });
+  }
+});
+
+app.get("/getTasks", authenticateToken, async (req, res) => {
+  const userId = req.user.userId;
+  try {
+    const tasks = await Task.find({ user: userId });
+    if (!tasks) {
+      res.status(400).send({ message: "No result!" });
+    }
+    res.json(tasks);
+  } catch (error) {}
 });
 
 app.listen(PORT, () => {
