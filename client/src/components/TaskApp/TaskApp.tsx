@@ -31,41 +31,41 @@ export default function TaskApp() {
     const { Option } = Select;
 
     useEffect(() => {
-        const fetchedTasks = async () => {
+        const fetchTasks = async () => {
             const token = sessionStorage.getItem('token');
             if (!token) {
-                console.log('Token is expired!')
-                return
+                console.log('Token is expired');
+                return;
             }
             try {
                 const response = await fetch('http://localhost:3000/getTasks', {
                     method: 'GET',
-                    headers: { 'Authorization': `Bearer ${token}` },
+                    headers: { 'Authorization': `Bearer ${token}` }
                 })
-
                 if (!response.ok) {
-                    console.log('Failed to fetch data!');
+                    console.log('Failed to fetch data!')
                     return;
                 }
-
                 const data = await response.json();
 
-                const mappedTasks = data.map((task: any) => ({
+                const mappedTasks = await data.map((task: any) => ({
                     id: task._id,
                     name: task.projectName,
                     description: task.projectDescription,
                     priority: task.projectPriority,
                     status: task.projectStatus ?? 'todo',
                     date: task.projectDate,
-                    deadline: task.projectDeadline
-                }))
+                    deadline: task.projectDeadline,
+                }));
 
-                setProjects(mappedTasks)
+                setProjects(mappedTasks);
+
+
             } catch (error) {
-
+                console.error('Error:', error);
             }
         }
-        fetchedTasks();
+        fetchTasks()
     }, [])
 
     const showCreateModal = () => {
@@ -114,23 +114,22 @@ export default function TaskApp() {
                     projectName: newProject.name,
                     projectDescription: newProject.description,
                     projectPriority: newProject.priority,
-                    projectDeadline: newProject.deadline,
                     projectStatus: newProject.status,
+                    projectDeadline: newProject.deadline,
                     projectDate: newProject.date ?? '',
                 })
             })
 
             const data = await response.json();
+
             if (response.ok) {
                 toast.success(data.message || 'Task was successfully created!');
                 setIsModalOpen(false)
             }
         } catch (error) {
-            toast.error('Unexpected error');
-            console.log('Server error')
+            console.error('Error:', error);
+            toast.error('Task is not created!')
         }
-
-
 
     }
 
@@ -285,7 +284,7 @@ export default function TaskApp() {
             <TaskList projects={sortedProjects} onDelete={handleDeleteTask} onView={openViewModal} onEdit={handleEditTask} hideDeadline={false} />
 
             {sortedProjects.length === 0 && (
-                <div className="no_result">No result</div>
+                <div className="no_result">No results</div>
             )}
 
             <NewTaskModal

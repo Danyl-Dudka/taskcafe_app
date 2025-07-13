@@ -113,22 +113,23 @@ app.post("/addTask", authenticateToken, async (req, res) => {
     projectName,
     projectDescription,
     projectPriority,
+    projectDeadline,
     projectStatus,
     projectDate,
-    projectDeadline,
   } = req.body;
+
   try {
     const newTask = new Task({
       projectName,
       projectDescription,
       projectPriority,
-      projectStatus: projectStatus || "todo",
-      projectDate: projectDate ? new Date(projectDate) : new Date(),
       projectDeadline: projectDeadline ? new Date(projectDeadline) : null,
+      projectDate: projectDate ? new Date(projectDate) : new Date(),
+      projectStatus: projectStatus || "todo",
       user: userId,
     });
     await newTask.save();
-    res.json({ message: "Task was created successfully!" });
+    res.json({ message: "Task was successfully created!" });
   } catch (error) {
     console.error("Task is not created:", error);
     res.status(500).send({ message: "Error" });
@@ -140,10 +141,12 @@ app.get("/getTasks", authenticateToken, async (req, res) => {
   try {
     const tasks = await Task.find({ user: userId });
     if (!tasks) {
-      res.status(400).send({ message: "No result!" });
+      return res.status(400).send({ message: 'No results'})
     }
     res.json(tasks);
-  } catch (error) {}
+  } catch (error) {
+    res.status(500).send({ message: "Server error" });
+  }
 });
 
 app.listen(PORT, () => {
