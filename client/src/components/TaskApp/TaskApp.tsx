@@ -60,12 +60,11 @@ export default function TaskApp() {
 
                 setProjects(mappedTasks);
 
-
             } catch (error) {
                 console.error('Error:', error);
             }
         }
-        fetchTasks()
+        fetchTasks();
     }, [])
 
     const showCreateModal = () => {
@@ -123,6 +122,7 @@ export default function TaskApp() {
             const data = await response.json();
 
             if (response.ok) {
+                setProjects((prevProjects) => [...prevProjects, newProject]);
                 toast.success(data.message || 'Task was successfully created!');
                 setIsModalOpen(false)
             }
