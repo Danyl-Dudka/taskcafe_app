@@ -141,12 +141,50 @@ app.get("/getTasks", authenticateToken, async (req, res) => {
   try {
     const tasks = await Task.find({ user: userId });
     if (!tasks) {
-      return res.status(400).send({ message: 'No results'})
+      return res.status(400).send({ message: "No results" });
     }
     res.json(tasks);
   } catch (error) {
     res.status(500).send({ message: "Server error" });
   }
+});
+
+app.put("/editTask", authenticateToken, async (req, res) => {
+  const {
+    editingTaskId,
+    editedProjectName,
+    editedProjectDescription,
+    editedProjectStatus,
+    editedProjectPriority,
+  } = req.body;
+  try {
+    const editedTask = await Task.findByIdAndUpdate(editingTaskId, {
+      projectName: editedProjectName,
+      projectDescription: editedProjectDescription,
+      projectStatus: editedProjectStatus,
+      projectPriority: editedProjectPriority,
+    });
+    res.json({ message: "Task was successfully updated!" });
+  } catch (error) {
+    res.status(500).send({ message: "Server error!" });
+  }
+});
+
+app.delete("/deleteTask", authenticateToken, async (req, res) => {
+
+  const { deletingProject } = req.body;
+
+  try {
+    const deletedProject = await Task.findByIdAndDelete(deletingProject);
+    if (!deletedProject) {
+      res.status(400).send({message: 'Project to delete is not defined!'})
+    }
+    res.json({ message: "Task was successfully deleted!" });
+
+  } catch (error) {
+    res.status(500).send({ message: "Server error!" });
+  }
+
 });
 
 app.listen(PORT, () => {

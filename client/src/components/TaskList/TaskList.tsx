@@ -10,7 +10,7 @@ import DeleteConfirmModal from '../DeleteConfirmModal/DeleteConfirmModal';
 export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadline }: ProjectListProps & { onView: (project: any) => void }) {
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
-    const [projectToDelete, setProjectToDelete] = useState<string | null>('');
+    const [projectToDelete, setProjectToDelete] = useState<string>('');
     const [editingTask, setEditingTask] = useState<any | null>(null);
     const [editedName, setEditedName] = useState<string>('');
     const [editedDescription, setEditedDescription] = useState<string>('');
@@ -22,13 +22,31 @@ export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadl
         setIsDeleteModalOpen(true);
     }
 
-
-    const handleConfirmDelete = () => {
-        if (projectToDelete) {
-            onDelete(projectToDelete);
+    const handleConfirmDelete = async () => {
+        const token = sessionStorage.getItem('token');
+        if (!token) {
+            console.log('Token is expired!');
+            return;
         }
-        setProjectToDelete(null);
-        setIsDeleteModalOpen(false);
+        try {
+            const response = await fetch('http://localhost:3000/deleteTask', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({deletingProject: projectToDelete}),
+            })
+
+            const data = await response.json();
+
+            try {
+                onDelete(projectToDelete);
+                toast.success(data.message || 'Task was successfully deleted!');
+                setIsDeleteModalOpen(false)
+            } catch (error) {
+                console.error(data.message || 'Error: ', error)
+            }
+        } catch (error) {
+
+        }
     }
 
     const handleEditClick = (task: any, e: React.MouseEvent) => {
@@ -40,24 +58,53 @@ export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadl
         setEditedStatus(task.status);
     }
 
-    const handleSaveEdit = (e: React.MouseEvent) => {
+    const handleSaveEdit = async (e: React.MouseEvent) => {
         e.stopPropagation();
+        const token = sessionStorage.getItem('token');
+        if (!token) {
+            console.log('Token is expired!');
+            return;
+        }
         const updated = {
-            ...editingTask,
-            name: editedName,
-            description: editedDescription,
-            priority: editedPriority,
-            status: editedStatus,
-        };
+            editingTaskId: editingTask.id,
+            editedProjectName: editedName,
+            editedProjectDescription: editedDescription,
+            editedProjectStatus: editedStatus,
+            editedProjectPriority: editedPriority,
+        }
 
-        if (editedStatus === 'done') {
-            toast.success('You have completed your project!!')
-            setTimeout(() => {
-                onEdit(updated);
-            }, 1500)
-        } else {
-            onEdit(updated);
-            setEditingTask(null);
+        try {
+            const response = await fetch('http://localhost:3000/editTask', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(updated)
+            })
+
+            const data = await response.json();
+
+            if (response.ok) {
+                if (editedStatus === 'done') {
+                    toast.success('You have completed your project!')
+                } else {
+                    toast.success(data.message || 'Your project has been updated!')
+                }
+
+                setTimeout(() => {
+                    onEdit({
+                        ...editingTask,
+                        name: editedName,
+                        description: editedDescription,
+                        status: editedStatus,
+                        priority: editedPriority
+                    })
+                }, 1500)
+
+                setEditingTask(null);
+
+            }
+        } catch (error) {
+            toast.error('Task is not updated!')
+            console.error("Error: ", error)
         }
     };
 
