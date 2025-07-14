@@ -151,40 +151,39 @@ app.get("/getTasks", authenticateToken, async (req, res) => {
 
 app.put("/editTask", authenticateToken, async (req, res) => {
   const {
-    editingTaskId,
+    projectId,
     editedProjectName,
     editedProjectDescription,
     editedProjectStatus,
     editedProjectPriority,
   } = req.body;
   try {
-    const editedTask = await Task.findByIdAndUpdate(editingTaskId, {
+    const updatedProject = await Task.findByIdAndUpdate(projectId, {
       projectName: editedProjectName,
       projectDescription: editedProjectDescription,
       projectStatus: editedProjectStatus,
       projectPriority: editedProjectPriority,
     });
-    res.json({ message: "Task was successfully updated!" });
+    if (!updatedProject) {
+      return res.status(404).send({ message: "Project to update was not found!" });
+    }
+    res.json({ message: "Project has been successfully updated!" });
   } catch (error) {
     res.status(500).send({ message: "Server error!" });
   }
 });
 
 app.delete("/deleteTask", authenticateToken, async (req, res) => {
-
-  const { deletingProject } = req.body;
-
+  const { projectIdToDelete } = req.body;
   try {
-    const deletedProject = await Task.findByIdAndDelete(deletingProject);
-    if (!deletedProject) {
-      res.status(400).send({message: 'Project to delete is not defined!'})
+    const deletingProject = await Task.findByIdAndDelete(projectIdToDelete);
+    if (!deletingProject) {
+      return res.status(404).send({ message: "Project to delete was not found" });
     }
-    res.json({ message: "Task was successfully deleted!" });
-
+    res.json({ message: "Project has been successfully deleted!" });
   } catch (error) {
     res.status(500).send({ message: "Server error!" });
   }
-
 });
 
 app.listen(PORT, () => {

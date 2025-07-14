@@ -124,7 +124,10 @@ export default function TaskApp() {
             if (response.ok) {
                 setProjects((prevProjects) => [...prevProjects, newProject]);
                 toast.success(data.message || 'Task was successfully created!');
-                setIsModalOpen(false)
+                setIsModalOpen(false);
+                setTimeout(() => {
+                    window.location.reload()
+                }, 1500)
             }
         } catch (error) {
             console.error('Error:', error);

@@ -25,27 +25,28 @@ export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadl
     const handleConfirmDelete = async () => {
         const token = sessionStorage.getItem('token');
         if (!token) {
-            console.log('Token is expired!');
+            console.log('Token is expired!')
             return;
         }
         try {
             const response = await fetch('http://localhost:3000/deleteTask', {
-                method: 'DELETE',
+                method: "DELETE",
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({deletingProject: projectToDelete}),
-            })
+                body: JSON.stringify({ projectIdToDelete: projectToDelete })
+            });
 
             const data = await response.json();
 
-            try {
+            if (response.ok) {
                 onDelete(projectToDelete);
-                toast.success(data.message || 'Task was successfully deleted!');
+                toast.success(data.message || 'Project has been successfully deleted!');
                 setIsDeleteModalOpen(false)
-            } catch (error) {
-                console.error(data.message || 'Error: ', error)
+            } else {
+                toast.error('Failed to delete project')
             }
         } catch (error) {
-
+            console.error('Error: ', error);
+            toast.error('An error occurred while deleting the project.')
         }
     }
 
@@ -66,45 +67,41 @@ export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadl
             return;
         }
         const updated = {
-            editingTaskId: editingTask.id,
+            projectId: editingTask.id,
             editedProjectName: editedName,
             editedProjectDescription: editedDescription,
             editedProjectStatus: editedStatus,
             editedProjectPriority: editedPriority,
         }
-
         try {
             const response = await fetch('http://localhost:3000/editTask', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(updated)
-            })
+            });
 
             const data = await response.json();
 
             if (response.ok) {
-                if (editedStatus === 'done') {
-                    toast.success('You have completed your project!')
+                if (editedStatus === "done") {
+                    toast.success('Project has been completed!');
                 } else {
-                    toast.success(data.message || 'Your project has been updated!')
+                    toast.success(data.message || 'Project has been successfully updated!');
                 }
 
-                setTimeout(() => {
-                    onEdit({
-                        ...editingTask,
-                        name: editedName,
-                        description: editedDescription,
-                        status: editedStatus,
-                        priority: editedPriority
-                    })
-                }, 1500)
 
+                onEdit({
+                    ...editingTask,
+                    name: editedName,
+                    description: editedDescription,
+                    status: editedStatus,
+                    priority: editedPriority
+                })
                 setEditingTask(null);
-
             }
         } catch (error) {
-            toast.error('Task is not updated!')
-            console.error("Error: ", error)
+            toast.error('An error occurred while updating the project.');
+            console.error('Error: ', error)
         }
     };
 
