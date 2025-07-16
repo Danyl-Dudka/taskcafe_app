@@ -16,13 +16,16 @@ const taskSchema = new mongoose.Schema({
   },
   projectStatus: {
     type: String,
-    default: 'todo'
+    default: "todo",
   },
   projectDate: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
-  
+  projectAssignedUser: {
+    type: String,
+    default: null,
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

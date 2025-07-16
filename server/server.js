@@ -113,6 +113,7 @@ app.post("/addTask", authenticateToken, async (req, res) => {
     projectName,
     projectDescription,
     projectPriority,
+    projectAssignedUser,
     projectDeadline,
     projectStatus,
     projectDate,
@@ -123,6 +124,7 @@ app.post("/addTask", authenticateToken, async (req, res) => {
       projectName,
       projectDescription,
       projectPriority,
+      projectAssignedUser,
       projectDeadline: projectDeadline ? new Date(projectDeadline) : null,
       projectDate: projectDate ? new Date(projectDate) : new Date(),
       projectStatus: projectStatus || "todo",
@@ -165,7 +167,9 @@ app.put("/editTask", authenticateToken, async (req, res) => {
       projectPriority: editedProjectPriority,
     });
     if (!updatedProject) {
-      return res.status(404).send({ message: "Project to update was not found!" });
+      return res
+        .status(404)
+        .send({ message: "Project to update was not found!" });
     }
     res.json({ message: "Project has been successfully updated!" });
   } catch (error) {
@@ -178,10 +182,42 @@ app.delete("/deleteTask", authenticateToken, async (req, res) => {
   try {
     const deletingProject = await Task.findByIdAndDelete(projectIdToDelete);
     if (!deletingProject) {
-      return res.status(404).send({ message: "Project to delete was not found" });
+      return res
+        .status(404)
+        .send({ message: "Project to delete was not found" });
     }
     res.json({ message: "Project has been successfully deleted!" });
   } catch (error) {
+    res.status(500).send({ message: "Server error!" });
+  }
+});
+
+app.put("/assignUser", authenticateToken, async (req, res) => {
+  const { taskId, assignedUser } = req.body;
+  try {
+    const assignUser = await Task.findByIdAndUpdate(
+      taskId,
+      { assignedUser: assignedUser },
+      { new: true }
+    );
+    if (!assignUser) {
+      return res.status(404).send({ message: " Task is not found!" });
+    }
+    res.json({ message: "User assigned successfully!", assignUser });
+  } catch (error) {
+    res.status(500).send({ message: "Server error!" });
+  }
+});
+
+app.get("/users", authenticateToken, async (req, res) => {
+  try {
+    const users = await User.find({}, "fullname");
+    if (!users) {
+      return res.status(404).send({ message: "Users is not defined!" });
+    }
+    res.json(users);
+  } catch (error) {
+    console.error(error);
     res.status(500).send({ message: "Server error!" });
   }
 });

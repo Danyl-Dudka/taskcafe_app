@@ -114,7 +114,6 @@ export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadl
         <>
             <div className='projects_board'>
                 {projects.map((project, index) => {
-                    const assignedUser = localStorage.getItem(`assignedUser_${project.id}`);
 
                     const today = dayjs().startOf('day');
                     const deadline = dayjs(project.deadline).startOf('day');
@@ -170,7 +169,7 @@ export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadl
                                     </div>
 
                                     <div className='assigned_user'>
-                                        <span className='user_name'>Assigned user: {assignedUser || <span className='no_user_span'>User is not assigned</span>}</span>
+                                        <span className='user_name'>Assigned user: {project.assignedUser || <span className='no_user_span'>User is not assigned</span>}</span>
                                     </div>
 
                                     <div className='project_title'>

@@ -1,9 +1,9 @@
 import { Modal, Input, Button, DatePicker, Select } from "antd";
 import './newTaskModal.css';
-import type { NewTaskModalProps } from "../types.tsx";
+import { type User, type NewTaskModalProps } from "../types.tsx";
 export type ModalMode = 'create' | 'reset' | 'view';
 import { newTodoSchema } from "../validation/validationSchema.ts";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 export default function NewTaskModal({
     open,
     modalMode,
@@ -12,20 +12,48 @@ export default function NewTaskModal({
     priority,
     date,
     deadline,
+    assignedUser,
     onChangeProjectName,
     onChangeDescription,
     onChangePriority,
     onChangeDeadline,
+    onChangeAssignUser,
     onConfirm,
     onCancel
 }: NewTaskModalProps) {
-    const [errors, setErrors] = useState<{ [key: string]: string }>({})
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [usersOptions, setUsersOptions] = useState<User[]>([]);
     const priorities = [
         { value: 'Low', label: 'Low' },
         { value: 'Medium', label: 'Medium' },
         { value: 'High', label: 'High' },
         { value: 'Urgent', label: 'Urgent' },
     ];
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+                console.log('Token is expired!');
+                return;
+            }
+            try {
+                const response = await fetch('http://localhost:3000/users', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    setUsersOptions(data);
+                }
+            } catch (error) {
+                console.error('Error:', error)
+            }
+        }
+        fetchUsers();
+        console.log()
+    }, []);
 
     const handleConfirm = async () => {
         try {
@@ -101,6 +129,18 @@ export default function NewTaskModal({
                         onChange={onChangeDeadline}
                         className="select_deadline"
                         placeholder="Select the deadline!"
+                    />
+
+                    <Select
+                        placeholder="Assign a user"
+                        value={assignedUser || undefined}
+                        onChange={onChangeAssignUser}
+                        optionFilterProp="label"
+                        className="select_user"
+                        options={usersOptions.map(user => ({
+                            value: user.fullname,
+                            label: user.fullname,
+                        }))}
                     />
 
                     <div className="modal-actions">

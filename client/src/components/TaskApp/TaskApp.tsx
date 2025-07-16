@@ -20,6 +20,7 @@ export default function TaskApp() {
     const [priority, setPriority] = useState('');
     const [date, setDate] = useState<Dayjs | null>(dayjs());
     const [deadline, setDeadline] = useState<Dayjs | null>(null);
+    const [assignedUser, setAssignedUser] = useState<string>('');
     const [status, setStatus] = useState<string>('todo')
     const [viewTask, setViewTask] = useState<ProjectViewData | null>(null);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -56,6 +57,7 @@ export default function TaskApp() {
                     status: task.projectStatus ?? 'todo',
                     date: task.projectDate,
                     deadline: task.projectDeadline,
+                    assignedUser: task.projectAssignedUser,
                 }));
 
                 setProjects(mappedTasks);
@@ -79,6 +81,11 @@ export default function TaskApp() {
 
     const handleCancel = () => {
         setIsModalOpen(false);
+        setAssignedUser('');
+        setPriority('');
+        setProjectName('');
+        setDescription('');
+        setDeadline(null);
     };
 
     const handleDeleteTask = (id: string) => {
@@ -103,6 +110,7 @@ export default function TaskApp() {
             status,
             date: date?.toISOString() ?? '',
             deadline: deadline?.toISOString() ?? '',
+            assignedUser,
         }
 
         try {
@@ -116,14 +124,17 @@ export default function TaskApp() {
                     projectStatus: newProject.status,
                     projectDeadline: newProject.deadline,
                     projectDate: newProject.date ?? '',
+                    projectAssignedUser: newProject.assignedUser,
                 })
             })
 
             const data = await response.json();
+            
 
             if (response.ok) {
                 setProjects((prevProjects) => [...prevProjects, newProject]);
                 toast.success(data.message || 'Task was successfully created!');
+                console.log('Assigned User:', assignedUser);
                 setIsModalOpen(false);
                 setTimeout(() => {
                     window.location.reload()
@@ -299,12 +310,14 @@ export default function TaskApp() {
                 status={status}
                 date={date}
                 deadline={deadline}
+                assignedUser = {assignedUser}
                 onChangeProjectName={setProjectName}
                 onChangeDescription={setDescription}
                 onChangeStatus={setStatus}
                 onChangePriority={setPriority}
                 onChangeDate={setDate}
                 onChangeDeadline={setDeadline}
+                onChangeAssignUser={setAssignedUser}
                 onConfirm={handleModalConfirm}
                 onCancel={handleCancel}
             />

@@ -115,6 +115,7 @@
 .select_priority {
     width: 100%;
     margin-top: 1rem;
+    height: 40px;
     color: black;
 }
 
@@ -155,6 +156,31 @@
     min-width: 140px;
     flex-shrink: 0;
 }
+
+.select_user {
+    width: 100%;
+    margin-top: 1rem;
+    cursor: pointer;
+    height: 40px;
+    color: white !important;
+}
+
+.select_user .ant-select-selector {
+    background-color: #343a6b !important;
+    border: 1.5px solid #6a6f9f !important;
+    border-radius: 10px !important;
+    padding: 0.7rem 1.2rem !important;
+    font-size: 1.1rem !important;
+    color: #e8eaf6 !important;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.select_user .ant-select-selection-placeholder {
+    color: #a0a5ce !important;
+    font-weight: 500;
+    opacity: 1;
+}
+
 
 .taskcafe-modal .value {
     color: #222;
