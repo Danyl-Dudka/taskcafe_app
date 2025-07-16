@@ -1,11 +1,12 @@
 import './taskList.css';
 import type { ProjectListProps } from '../types.tsx';
 import dayjs from 'dayjs';
-import { Radio } from 'antd';
+import { Radio, Select } from 'antd';
 import { Trash2, SquarePen } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from "react-toastify";
 import { statusLabels } from '../types.tsx';
+import type { User } from '../types.tsx';
 import DeleteConfirmModal from '../DeleteConfirmModal/DeleteConfirmModal';
 export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadline }: ProjectListProps & { onView: (project: any) => void }) {
 
@@ -16,6 +17,33 @@ export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadl
     const [editedDescription, setEditedDescription] = useState<string>('');
     const [editedPriority, setEditedPriority] = useState<string>('');
     const [editedStatus, setEditedStatus] = useState<string>('todo');
+    const [usersOptions, setUsersOptions] = useState<User[]>([]);
+    const [editedUser, setEditedUser] = useState<string>('');
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+                console.log('Token is expired!');
+                return;
+            }
+            try {
+                const response = await fetch('http://localhost:3000/users', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    setUsersOptions(data);
+                }
+            } catch (error) {
+                console.error('Error:', error)
+            }
+        }
+        fetchUsers();
+        console.log()
+    }, []);
     const confirmDelete = (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
         setProjectToDelete(id);
@@ -57,6 +85,7 @@ export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadl
         setEditedDescription(task.description);
         setEditedPriority(task.priority);
         setEditedStatus(task.status);
+        setEditedUser(task.assignedUser)
     }
 
     const handleSaveEdit = async (e: React.MouseEvent) => {
@@ -72,6 +101,7 @@ export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadl
             editedProjectDescription: editedDescription,
             editedProjectStatus: editedStatus,
             editedProjectPriority: editedPriority,
+            editedAssignedUser: editedUser,
         }
         try {
             const response = await fetch('http://localhost:3000/editTask', {
@@ -95,7 +125,8 @@ export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadl
                     name: editedName,
                     description: editedDescription,
                     status: editedStatus,
-                    priority: editedPriority
+                    priority: editedPriority,
+                    assignedUser: editedUser,
                 })
                 setEditingTask(null);
             }
@@ -159,8 +190,21 @@ export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadl
                                         <option value="Medium">Medium</option>
                                         <option value="Low">Low</option>
                                     </select>
+
+                                    <Select
+                                        placeholder="Assign a user"
+                                        value={editedUser}
+                                        onChange={(e) => setEditedUser(e)}
+                                        className='assigned_user_edit'
+                                        options={usersOptions.map(user => ({
+                                            value: user.fullname,
+                                            label: user.fullname,
+                                        }))}
+                                    />
+                                    <div className='edit_buttons'>
                                     <button className='save_btn' type="button" onClick={handleSaveEdit}>Save</button>
                                     <button className='cancel_btn' type='button' onClick={handleCancelEdit}>Cancel</button>
+                                    </div>
                                 </div>
                             ) : (
                                 <>

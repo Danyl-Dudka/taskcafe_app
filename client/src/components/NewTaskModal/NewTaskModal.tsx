@@ -135,7 +135,6 @@ export default function NewTaskModal({
                         placeholder="Assign a user"
                         value={assignedUser || undefined}
                         onChange={onChangeAssignUser}
-                        optionFilterProp="label"
                         className="select_user"
                         options={usersOptions.map(user => ({
                             value: user.fullname,

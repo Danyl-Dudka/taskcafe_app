@@ -177,6 +177,14 @@
     opacity: 0.9;
 }
 
+.assigned_user_edit {
+    width: 100%;
+}
+
+.edit_buttons {
+    margin-top: 20px;
+}
+
 .assigned_user {
     margin-top: 8px;
     margin-bottom: 12px;

@@ -151,6 +151,15 @@ app.get("/getTasks", authenticateToken, async (req, res) => {
   }
 });
 
+app.get("/resetTasks", authenticateToken, async (req, res) => {
+  try {
+    await Task.deleteMany({});
+    res.status(200).json({ message: "All tasks deleted successfully!" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete tasks: ", error });
+  }
+});
+
 app.put("/editTask", authenticateToken, async (req, res) => {
   const {
     projectId,
@@ -158,6 +167,7 @@ app.put("/editTask", authenticateToken, async (req, res) => {
     editedProjectDescription,
     editedProjectStatus,
     editedProjectPriority,
+    editedAssignedUser,
   } = req.body;
   try {
     const updatedProject = await Task.findByIdAndUpdate(projectId, {
@@ -165,6 +175,7 @@ app.put("/editTask", authenticateToken, async (req, res) => {
       projectDescription: editedProjectDescription,
       projectStatus: editedProjectStatus,
       projectPriority: editedProjectPriority,
+      projectAssignedUser: editedAssignedUser,
     });
     if (!updatedProject) {
       return res

@@ -129,12 +129,11 @@ export default function TaskApp() {
             })
 
             const data = await response.json();
-            
+
 
             if (response.ok) {
                 setProjects((prevProjects) => [...prevProjects, newProject]);
                 toast.success(data.message || 'Task was successfully created!');
-                console.log('Assigned User:', assignedUser);
                 setIsModalOpen(false);
                 setTimeout(() => {
                     window.location.reload()
@@ -147,10 +146,27 @@ export default function TaskApp() {
 
     }
 
-    const handleResetProjects = () => {
-        localStorage.removeItem(LOCAL_STORAGE_KEY);
-        setProjects([]);
-        setIsModalOpen(false);
+    const handleResetProjects = async () => {
+        const token = sessionStorage.getItem('token');
+        if (!token) {
+            console.log('Token is expired!')
+            return;
+        } try {
+            const response = await fetch('http://localhost:3000/resetTasks', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+            })
+            const data = await response.json();
+            if (response.ok) {
+                setProjects([]);
+                setIsModalOpen(false);
+                toast.success(data.message || 'Tasks successfully deleted!')
+            } else {
+                toast.error(data.message || 'Failed to reset tasks');
+            }
+        } catch (error) {
+            console.error('Error: ', error)
+        }
     }
 
     const handleModalConfirm = () => {
@@ -310,7 +326,7 @@ export default function TaskApp() {
                 status={status}
                 date={date}
                 deadline={deadline}
-                assignedUser = {assignedUser}
+                assignedUser={assignedUser}
                 onChangeProjectName={setProjectName}
                 onChangeDescription={setDescription}
                 onChangeStatus={setStatus}
