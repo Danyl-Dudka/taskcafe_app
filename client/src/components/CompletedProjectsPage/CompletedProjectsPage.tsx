@@ -1,3 +1,4 @@
+// CLEAN
 import type { ProjectFormData, ProjectViewData } from "../types";
 import { useState, useEffect } from "react";
 import TaskList from "../TaskList/TaskList";
@@ -6,42 +7,56 @@ import './completedProjectsPage.css'
 import ViewTaskModal from "../ViewTaskModal/ViewTaskModal";
 export default function CompletedProjectsPage() {
     const [completedProjects, setCompletedProjects] = useState<ProjectFormData[]>([]);
-    const LOCAL_STORAGE_KEY = 'taskapp_projects';
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [viewTask, setViewTask] = useState<ProjectViewData | null>(null);
 
 
     useEffect(() => {
-        const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-        if (saved) {
-            const allProjects: ProjectFormData[] = JSON.parse(saved);
-            const doneProjects = allProjects.filter(p => p.status === 'done')
-            setCompletedProjects(doneProjects)
+        const fetchTasks = async () => {
+            const token = sessionStorage.getItem('token');
+            if (!token) {
+                console.log('Token is expired');
+                return;
+            }
+            try {
+                const response = await fetch('http://localhost:3000/getTasks', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+                if (!response.ok) {
+                    console.log('Failed to fetch data!')
+                    return;
+                }
+                const data = await response.json();
+
+                const mappedTasks = await data.map((task: any) => ({
+                    id: task._id,
+                    name: task.projectName,
+                    description: task.projectDescription,
+                    priority: task.projectPriority,
+                    status: task.projectStatus ?? 'todo',
+                    date: task.projectDate,
+                    deadline: task.projectDeadline,
+                    assignedUser: task.projectAssignedUser,
+                }));
+
+                const doneProjects = mappedTasks.filter((p: ProjectFormData) => p.status === "done");
+                setCompletedProjects(doneProjects)
+            } catch (error) {
+                console.error('Error:', error);
+            }
         }
-    }, [])
+        fetchTasks();
+    }, []);
 
     const handleDelete = (id: string) => {
-        const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-        if (saved) {
-            const allProjects: ProjectFormData[] = JSON.parse(saved);
-            const updatedProjects = allProjects.filter((p) => p.id !== id);
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedProjects))
-
-            const doneProjects = updatedProjects.filter(p => p.status === 'done');
-            setCompletedProjects(doneProjects)
-        }
+        const updatedProjects = completedProjects.filter((p) => p.id !== id);
+        setCompletedProjects(updatedProjects)
     };
-
     const handleEdit = (updated: ProjectFormData) => {
-        const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-        if (saved) {
-            const allProjects: ProjectFormData[] = JSON.parse(saved);
-            const updatedProjects = allProjects.map((p) => (p.id === updated.id ? updated : p));
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedProjects))
-            setCompletedProjects(updatedProjects.filter(p => p.status === 'done'));
-
-        }
-    }
+        const updatedProjects = completedProjects.map((p) => (p.id === updated.id ? updated : p)).filter(p => p.status === 'done');
+        setCompletedProjects(updatedProjects);
+    };
 
     const openViewModal = (project: ProjectFormData) => {
         setViewTask({

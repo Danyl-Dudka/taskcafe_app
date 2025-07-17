@@ -1,6 +1,7 @@
+// CLEAN
+
 import { useState } from 'react'
 import './SettingsPage.css';
-
 export default function SettingsPage() {
   const [currentPassword, setCurrentPasword] = useState<string>('');
   const [newPassword, setNewPassword] = useState<string>('');

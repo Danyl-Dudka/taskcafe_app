@@ -10,11 +10,30 @@ import { CircleX } from 'lucide-react';
 import { Funnel, ArrowUpDown } from 'lucide-react';
 import { Cascader, Select } from 'antd';
 import { toast } from "react-toastify";
+
 export default function TaskApp() {
-    const LOCAL_STORAGE_KEY = 'taskapp_projects';
-    const [projects, setProjects] = useState<ProjectFormData[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
     const [modalMode, setModalMode] = useState<ModalMode>('create');
+
+    const [viewTask, setViewTask] = useState<ProjectViewData | null>(null);
+
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+
+    const [filterValues, setFilterValues] = useState<string[]>([]);
+
+    const [showFilterOptions, setShowFilterOptions] = useState<boolean>(false);
+
+    const [sortType, setSortType] = useState<string>('');
+
+    const [showSortingOptions, setShowSortingOptions] = useState<boolean>(false);
+
+    const [query, setQuery] = useState<string>('');
+
+    const { Option } = Select;
+
+
+    const [projects, setProjects] = useState<ProjectFormData[]>([]);
     const [projectName, setProjectName] = useState('');
     const [description, setDescription] = useState('');
     const [priority, setPriority] = useState('');
@@ -22,14 +41,45 @@ export default function TaskApp() {
     const [deadline, setDeadline] = useState<Dayjs | null>(null);
     const [assignedUser, setAssignedUser] = useState<string>('');
     const [status, setStatus] = useState<string>('todo')
-    const [viewTask, setViewTask] = useState<ProjectViewData | null>(null);
-    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-    const [filterValues, setFilterValues] = useState<string[]>([]);
-    const [showFilterOptions, setShowFilterOptions] = useState<boolean>(false);
-    const [sortType, setSortType] = useState<string>('');
-    const [showSortingOptions, setShowSortingOptions] = useState<boolean>(false);
-    const [query, setQuery] = useState<string>('');
-    const { Option } = Select;
+
+    const cascaderOptions = [
+        {
+            value: 'status',
+            label: 'Status',
+            children: [
+                {
+                    value: 'todo',
+                    label: 'To Do',
+                },
+                {
+                    value: 'in-progress',
+                    label: 'In Progress',
+                }
+            ]
+        },
+        {
+            value: 'priority',
+            label: 'Priority',
+            children: [
+                {
+                    value: 'Urgent',
+                    label: 'Urgent',
+                },
+                {
+                    value: 'High',
+                    label: 'High',
+                },
+                {
+                    value: 'Medium',
+                    label: 'Medium',
+                },
+                {
+                    value: 'Low',
+                    label: 'Low',
+                },
+            ]
+        },
+    ]
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -67,34 +117,7 @@ export default function TaskApp() {
             }
         }
         fetchTasks();
-    }, [])
-
-    const showCreateModal = () => {
-        setModalMode('create');
-        setIsModalOpen(true)
-    };
-
-    const showResetModal = () => {
-        setModalMode('reset');
-        setIsModalOpen(true)
-    };
-
-    const handleCancel = () => {
-        setIsModalOpen(false);
-        setAssignedUser('');
-        setPriority('');
-        setProjectName('');
-        setDescription('');
-        setDeadline(null);
-    };
-
-    const handleDeleteTask = (id: string) => {
-        const updatedTasks = projects.filter((project) => project.id !== id)
-        setProjects(updatedTasks)
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedTasks))
-
-    }
-
+    }, []);
 
     const handleAddProject = async () => {
         const token = sessionStorage.getItem('token');
@@ -169,13 +192,66 @@ export default function TaskApp() {
         }
     }
 
-    const handleModalConfirm = () => {
-        if (modalMode === 'create') {
-            handleAddProject()
-        } else {
-            handleResetProjects();
+    const filteredProjects = projects.filter((project) => {
+
+        const matchName = project.name.toLowerCase().includes(query.toLowerCase())
+
+        const matchStatus = filterValues.includes('todo') || filterValues.includes('in-progress')
+            ? filterValues.includes(project.status)
+            : project.status !== 'done';
+
+        const matchPriority = filterValues.includes('Urgent') || filterValues.includes('High') || filterValues.includes('Medium') || filterValues.includes('Low')
+            ? filterValues.includes(project.priority)
+            : true;
+
+        return matchName && matchStatus && matchPriority
+    });
+
+    const sortedProjects = [...filteredProjects].sort((a, b) => {
+        if (sortType === 'date-desc') {
+            return new Date(b.date).getTime() - new Date(a.date).getTime();
         }
+        if (sortType === 'date-asc') {
+            return new Date(a.date).getTime() - new Date(b.date).getTime();
+        }
+        if (sortType === 'priority') {
+            const priorityOrders = ['Low', 'Medium', 'High', 'Urgent'];
+            return priorityOrders.indexOf(a.priority) - priorityOrders.indexOf(b.priority)
+        }
+        if (sortType === 'name') {
+            return a.name.localeCompare(b.name);
+        }
+        return 0;
+    });
+
+
+    const handleChange = (value: string[][]) => {
+        const flattened = value.flat();
+        setFilterValues(flattened)
     }
+
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setQuery(e.target.value)
+    };
+
+    const showCreateModal = () => {
+        setModalMode('create');
+        setIsModalOpen(true)
+    };
+
+    const showResetModal = () => {
+        setModalMode('reset');
+        setIsModalOpen(true)
+    };
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
+        setAssignedUser('');
+        setPriority('');
+        setProjectName('');
+        setDescription('');
+        setDeadline(null);
+    };
 
     const openViewModal = (project: ProjectFormData) => {
         setViewTask({
@@ -193,90 +269,21 @@ export default function TaskApp() {
 
     const handleEditTask = (updatedTask: ProjectFormData) => {
         const updated = projects.map((p) => (p.id === updatedTask.id ? updatedTask : p))
-        setProjects(updated);
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated))
-    }
+        setProjects(updated)
+    };
 
-    const cascaderOptions = [
-        {
-            value: 'status',
-            label: 'Status',
-            children: [
-                {
-                    value: 'todo',
-                    label: 'To Do',
-                },
-                {
-                    value: 'in-progress',
-                    label: 'In Progress',
-                }
-            ]
-        },
-        {
-            value: 'priority',
-            label: 'Priority',
-            children: [
-                {
-                    value: 'Urgent',
-                    label: 'Urgent',
-                },
-                {
-                    value: 'High',
-                    label: 'High',
-                },
-                {
-                    value: 'Medium',
-                    label: 'Medium',
-                },
-                {
-                    value: 'Low',
-                    label: 'Low',
-                },
-            ]
-        },
-    ]
+    const handleDeleteTask = (id: string) => {
+        const updatedTasks = projects.filter((project) => project.id !== id)
+        setProjects(updatedTasks)
+    };
 
-    const filteredProjects = projects.filter((project) => {
-
-        const matchName = project.name.toLowerCase().includes(query.toLowerCase())
-
-        const matchStatus = filterValues.includes('todo') || filterValues.includes('in-progress')
-            ? filterValues.includes(project.status)
-            : project.status !== 'done';
-
-        const matchPriority = filterValues.includes('Urgent') || filterValues.includes('High') || filterValues.includes('Medium') || filterValues.includes('Low')
-            ? filterValues.includes(project.priority)
-            : true;
-
-        return matchName && matchStatus && matchPriority
-    });
-
-    const handleChange = (value: string[][]) => {
-        const flattened = value.flat();
-        setFilterValues(flattened)
-    }
-
-    const sortedProjects = [...filteredProjects].sort((a, b) => {
-        if (sortType === 'date-desc') {
-            return new Date(b.date).getTime() - new Date(a.date).getTime();
+    const handleModalConfirm = () => {
+        if (modalMode === 'create') {
+            handleAddProject()
+        } else {
+            handleResetProjects();
         }
-        if (sortType === 'date-asc') {
-            return new Date(a.date).getTime() - new Date(b.date).getTime();
-        }
-        if (sortType === 'priority') {
-            const priorityOrders = ['Low', 'Medium', 'High', 'Urgent'];
-            return priorityOrders.indexOf(a.priority) - priorityOrders.indexOf(b.priority)
-        }
-        if (sortType === 'name') {
-            return a.name.localeCompare(b.name);
-        }
-        return 0;
-    })
-
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setQuery(e.target.value)
-
-    }
+    };
 
     return (
         <div className="taskapp_container">

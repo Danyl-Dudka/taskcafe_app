@@ -1,3 +1,4 @@
+// CLEAN
 import { Modal } from "antd";
 import type { DeleteConfirmModalProps } from "../types.tsx";
 import './DeleteConfirmModal.css'

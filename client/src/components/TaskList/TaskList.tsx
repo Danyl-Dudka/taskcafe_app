@@ -1,3 +1,4 @@
+// CLEAN
 import './taskList.css';
 import type { ProjectListProps } from '../types.tsx';
 import dayjs from 'dayjs';
@@ -10,8 +11,6 @@ import type { User } from '../types.tsx';
 import DeleteConfirmModal from '../DeleteConfirmModal/DeleteConfirmModal';
 export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadline }: ProjectListProps & { onView: (project: any) => void }) {
 
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
-    const [projectToDelete, setProjectToDelete] = useState<string>('');
     const [editingTask, setEditingTask] = useState<any | null>(null);
     const [editedName, setEditedName] = useState<string>('');
     const [editedDescription, setEditedDescription] = useState<string>('');
@@ -19,6 +18,11 @@ export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadl
     const [editedStatus, setEditedStatus] = useState<string>('todo');
     const [usersOptions, setUsersOptions] = useState<User[]>([]);
     const [editedUser, setEditedUser] = useState<string>('');
+
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+
+    const [projectToDelete, setProjectToDelete] = useState<string>('');
+
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -42,12 +46,27 @@ export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadl
             }
         }
         fetchUsers();
-        console.log()
     }, []);
+
     const confirmDelete = (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
         setProjectToDelete(id);
         setIsDeleteModalOpen(true);
+    }
+
+    const handleEditClick = (task: any, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setEditingTask(task);
+        setEditedName(task.name);
+        setEditedDescription(task.description);
+        setEditedPriority(task.priority);
+        setEditedStatus(task.status);
+        setEditedUser(task.assignedUser)
+    };
+
+    const handleCancelEdit = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setEditingTask(null);
     }
 
     const handleConfirmDelete = async () => {
@@ -76,16 +95,6 @@ export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadl
             console.error('Error: ', error);
             toast.error('An error occurred while deleting the project.')
         }
-    }
-
-    const handleEditClick = (task: any, e: React.MouseEvent) => {
-        e.stopPropagation();
-        setEditingTask(task);
-        setEditedName(task.name);
-        setEditedDescription(task.description);
-        setEditedPriority(task.priority);
-        setEditedStatus(task.status);
-        setEditedUser(task.assignedUser)
     }
 
     const handleSaveEdit = async (e: React.MouseEvent) => {
@@ -135,11 +144,6 @@ export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadl
             console.error('Error: ', error)
         }
     };
-
-    const handleCancelEdit = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        setEditingTask(null);
-    }
 
     return (
         <>
@@ -202,8 +206,8 @@ export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadl
                                         }))}
                                     />
                                     <div className='edit_buttons'>
-                                    <button className='save_btn' type="button" onClick={handleSaveEdit}>Save</button>
-                                    <button className='cancel_btn' type='button' onClick={handleCancelEdit}>Cancel</button>
+                                        <button className='save_btn' type="button" onClick={handleSaveEdit}>Save</button>
+                                        <button className='cancel_btn' type='button' onClick={handleCancelEdit}>Cancel</button>
                                     </div>
                                 </div>
                             ) : (

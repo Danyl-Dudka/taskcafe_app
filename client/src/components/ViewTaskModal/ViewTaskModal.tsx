@@ -1,3 +1,4 @@
+// CLEAN
 import { Modal } from "antd";
 import './viewTaskModal.css';
 import type { ViewTaskModalProps } from "../types.tsx";
