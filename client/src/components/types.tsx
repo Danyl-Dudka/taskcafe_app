@@ -28,6 +28,8 @@ export interface NewTaskModalProps {
     date: Dayjs | null;
     deadline: Dayjs | null;
     assignedUser: string;
+    currentPassword: string;
+    onChangeCurrentPassword: (value: string) => void;
     onChangeProjectName: (value: string) => void;
     onChangeDescription: (value: string) => void;
     onChangeStatus: (value: string) => void;

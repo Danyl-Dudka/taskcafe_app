@@ -14,6 +14,8 @@ export default function NewTaskModal({
     date,
     deadline,
     assignedUser,
+    currentPassword,
+    onChangeCurrentPassword,
     onChangeProjectName,
     onChangeDescription,
     onChangePriority,
@@ -80,6 +82,16 @@ export default function NewTaskModal({
                 setErrors(newErrors)
             }
         }
+    };
+
+    const handleCancel = () => {
+        onCancel();
+        onChangeCurrentPassword('');
+    }
+
+    const onConfirmReset = () => {
+        onConfirm();
+        onChangeCurrentPassword('');
     }
 
 
@@ -150,10 +162,11 @@ export default function NewTaskModal({
                 </>
             ) : (
                 <>
-                    <p className="reset_confirm_paragraph">Are you sure that you want to reset all projects?</p>
+                    <p className="reset_confirm_paragraph">To confirm, enter your password in the box below!</p>
+                    <input type="password" placeholder="Enter your password!" className="reset_confirmation_input" value={currentPassword} onChange={(e) => onChangeCurrentPassword(e.target.value)} />
                     <div className="modal-actions">
-                        <Button danger onClick={() => onConfirm()}>Reset</Button>
-                        <Button onClick={onCancel}>Cancel</Button>
+                        <Button danger onClick={onConfirmReset}>Reset</Button>
+                        <Button onClick={handleCancel}>Cancel</Button>
                     </div>
                 </>
             )}

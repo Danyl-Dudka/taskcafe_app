@@ -151,9 +151,23 @@ app.get("/getTasks", authenticateToken, async (req, res) => {
   }
 });
 
-app.get("/resetTasks", authenticateToken, async (req, res) => {
+app.post("/resetTasks", authenticateToken, async (req, res) => {
+  const userId = req.user.userId;
+  const { currentPassword } = req.body;
   try {
-    await Task.deleteMany({});
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ message: "User is not found!" });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Current password is incorrect!'});
+    }
+
+    await Task.deleteMany({ user: userId });
     res.status(200).json({ message: "All tasks deleted successfully!" });
   } catch (error) {
     res.status(500).json({ message: "Failed to delete tasks: ", error });

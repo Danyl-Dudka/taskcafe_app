@@ -32,6 +32,7 @@ export default function TaskApp() {
 
     const { Option } = Select;
 
+    const [currentPassword, setCurrentPassword] = useState<string>('');
 
     const [projects, setProjects] = useState<ProjectFormData[]>([]);
     const [projectName, setProjectName] = useState('');
@@ -176,8 +177,9 @@ export default function TaskApp() {
             return;
         } try {
             const response = await fetch('http://localhost:3000/resetTasks', {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ currentPassword })
             })
             const data = await response.json();
             if (response.ok) {
@@ -215,7 +217,7 @@ export default function TaskApp() {
             return new Date(a.date).getTime() - new Date(b.date).getTime();
         }
         if (sortType === 'priority') {
-            const priorityOrders = ['Low', 'Medium', 'High', 'Urgent'];
+            const priorityOrders = ['Urgent', 'High', 'Medium', 'Low'];
             return priorityOrders.indexOf(a.priority) - priorityOrders.indexOf(b.priority)
         }
         if (sortType === 'name') {
@@ -334,6 +336,8 @@ export default function TaskApp() {
                 date={date}
                 deadline={deadline}
                 assignedUser={assignedUser}
+                currentPassword={currentPassword}
+                onChangeCurrentPassword={setCurrentPassword}
                 onChangeProjectName={setProjectName}
                 onChangeDescription={setDescription}
                 onChangeStatus={setStatus}
