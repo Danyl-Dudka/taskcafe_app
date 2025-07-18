@@ -5,6 +5,7 @@ import { type User, type NewTaskModalProps } from "../types.tsx";
 export type ModalMode = 'create' | 'reset' | 'view';
 import { newTodoSchema } from "../validation/validationSchema.ts";
 import { useState, useEffect } from "react";
+import dayjs from "dayjs";
 export default function NewTaskModal({
     open,
     modalMode,
@@ -65,7 +66,8 @@ export default function NewTaskModal({
                     date,
                     projectName,
                     description,
-                    priority
+                    priority,
+                    deadline
                 },
                 { abortEarly: false }
             )
@@ -142,7 +144,12 @@ export default function NewTaskModal({
                         onChange={onChangeDeadline}
                         className="select_deadline"
                         placeholder="Select the deadline!"
+                        disabledDate={(current) => current && current < dayjs().startOf('day')}
                     />
+
+                    {errors.deadline &&
+                        <div className="error">{errors.deadline}</div>
+                    }
 
                     <Select
                         placeholder="Assign a user"

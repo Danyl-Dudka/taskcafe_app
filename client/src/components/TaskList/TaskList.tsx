@@ -152,20 +152,25 @@ export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadl
 
                     const today = dayjs().startOf('day');
                     const deadline = dayjs(project.deadline).startOf('day');
-                    const daysLeft = deadline.diff(today, 'day');
-
-                    let deadlineClass = 'deadline-ok';
+                    let deadlineClass;
                     let deadlineText;
-                    if (daysLeft < 2 && daysLeft > 0) {
+                    let daysLeft = deadline.diff(today, 'day');
+                    if (daysLeft < 0) {
+                        deadlineClass = 'deadline-overdue';
+                        deadlineText = 'Overdue!';
+                    } else if (daysLeft === 0) {
+                        deadlineClass = 'deadline_today';
+                        deadlineText = <span>Deadline is <span style={{color: 'red'}}>today!</span></span>
+                    } else if (daysLeft < 3) {
                         deadlineClass = 'deadline-soon';
                         deadlineText = 'Deadline soon!';
-                    } else if (daysLeft < 1) {
-                        deadlineClass = 'deadline-overdue'
-                        deadlineText = 'Overdue!'
                     } else if (!deadline.isValid()) {
-                        deadlineClass = 'not_selected'
-                        deadlineText = 'Not selected!'
+                        deadlineClass = "not_selected";
+                        deadlineText = 'Not selected!';
+                    } else {
+                        deadlineClass = 'deadline-ok';
                     }
+
 
                     return (
                         <div key={index}
@@ -248,7 +253,7 @@ export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadl
                                                     : 'Not selected!'}
                                             </div>
                                             <div className="deadline_status_text">{deadlineText}
-                                                {deadline.isValid() && daysLeft >= 0 && (
+                                                {deadline.isValid() && daysLeft !== null && daysLeft > 0 && (
                                                     <span className='days_left_text'>{daysLeft} day{daysLeft !== 1 ? 's' : ''} left!</span>
                                                 )}
                                             </div>

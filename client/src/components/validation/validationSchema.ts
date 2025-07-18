@@ -12,6 +12,7 @@ export const newTodoSchema = yup.object().shape({
     projectName: yup.string().required('Name is required').min(3, 'Name must be at least 3 characters!'),
     description: yup.string().max(90, 'Description length must not exceed 90 characters'),
     priority: yup.string().required('Priority is required!'),
+    deadline: yup.date().min(new Date(new Date().setHours(0, 0, 0, 0)), 'Deadline cannot be in the past'),
 })
 
 export default registerSchema;

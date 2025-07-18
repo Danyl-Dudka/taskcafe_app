@@ -73,7 +73,7 @@ export default function RegisterForm() {
                     <img src="/images/taskcafe_main_logo.png" alt="taskcafe-logo" className="main_logo" />
                     <h2>Register</h2>
                     <b style={{ fontSize: 22, marginBottom: 30, fontFamily: "serif" }}>Please create your user</b>
-                    <p>Full name</p>
+                    <p>Name</p>
                     <input type="text"
                         className="fullname_input"
                         value={fullname}
