@@ -76,7 +76,7 @@ export default function CompletedProjectsPage() {
     return (
         <>
             <div className="taskapp_container">
-                <h2>Completed Projects</h2>
+                <h2>Completed Tasks</h2>
                 <TaskList
                     projects={completedProjects}
                     onView={openViewModal}

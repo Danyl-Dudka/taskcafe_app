@@ -110,3 +110,9 @@ export interface Option {
     label: string;
     children?: Option[];
 }
+
+export type Subtask = {
+    _id: string;
+    subTaskName: string;
+    subTaskDescription: string;
+}

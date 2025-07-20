@@ -31,6 +31,12 @@ const taskSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  subtasks: [
+    {
+      subTaskName: { type: String, required: true },
+      subTaskDescription: {type: String, default: 'Subtask description is not provided'},
+    },
+  ],
 });
 
 export const Task = mongoose.model("Task", taskSchema);

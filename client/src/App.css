@@ -1,3 +1,12 @@
 body {
   background-color: #41425f;
 }
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}

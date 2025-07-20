@@ -138,6 +138,55 @@ app.post("/addTask", authenticateToken, async (req, res) => {
   }
 });
 
+app.post("/addSubtask", authenticateToken, async (req, res) => {
+  const userId = req.user.userId;
+  const { projectId, subTaskName, subTaskDescription } = req.body;
+
+  if (!projectId) {
+    return res.status(400).json({ message: "Project is not defined!" });
+  }
+
+  if (!subTaskName) {
+    return res.status(400).json({ message: "Subtask name is required!" });
+  }
+  try {
+    const task = await Task.findOne({ _id: projectId, user: userId });
+    if (!task) {
+      return res.status(404).send({ message: "Task is not found!" });
+    }
+
+    task.subtasks.push({ subTaskName, subTaskDescription });
+
+    await task.save();
+    res.json({ message: "Subtask added successfully!" });
+  } catch (error) {
+    console.error("Failed to add subtask: ", error);
+    res.status(500).json({ message: "Server error!" });
+  }
+});
+
+app.get("/getSubtasks", authenticateToken, async (req, res) => {
+  const userId = req.user.userId;
+  const taskId = req.query.taskId;
+
+  if (!taskId) {
+    return res.status(400).json({ message: "Task ID is required!" });
+  }
+
+  try {
+    const task = await Task.findOne({ _id: taskId, user: userId });
+    if (!task) {
+      return res.status(400).json({ message: "Task is not defined!" });
+    }
+
+    res.json(task.subtasks || []);
+    
+  } catch (error) {
+    console.error("Error fetching subtasks: ", error);
+    res.status(500).json({ message: "Server error!" });
+  }
+});
+
 app.get("/getTasks", authenticateToken, async (req, res) => {
   const userId = req.user.userId;
   try {
@@ -156,7 +205,7 @@ app.post("/resetTasks", authenticateToken, async (req, res) => {
   const { currentPassword } = req.body;
   try {
     const user = await User.findById(userId);
-    
+
     if (!user) {
       return res.status(404).json({ message: "User is not found!" });
     }
@@ -164,7 +213,9 @@ app.post("/resetTasks", authenticateToken, async (req, res) => {
     const isMatch = await bcrypt.compare(currentPassword, user.password);
 
     if (!isMatch) {
-      return res.status(401).json({ message: 'Current password is incorrect!'});
+      return res
+        .status(401)
+        .json({ message: "Current password is incorrect!" });
     }
 
     await Task.deleteMany({ user: userId });
