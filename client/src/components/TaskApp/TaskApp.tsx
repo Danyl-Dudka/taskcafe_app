@@ -349,7 +349,7 @@ export default function TaskApp() {
                 onCancel={handleCancel}
             />
 
-            <ViewTaskModal open={isViewModalOpen} onCancel={closeViewModal} task={viewTask} />
+            <ViewTaskModal open={isViewModalOpen} onCancel={closeViewModal} task={viewTask} disableSubtaskAdd={false} />
 
         </div>
     )

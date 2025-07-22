@@ -86,7 +86,7 @@ export default function CompletedProjectsPage() {
                 />
             </div>
 
-            <ViewTaskModal open={isViewModalOpen} onCancel={closeViewModal} task={viewTask} />
+            <ViewTaskModal open={isViewModalOpen} onCancel={closeViewModal} task={viewTask} disableSubtaskAdd={true} />
         </>
     )
 }

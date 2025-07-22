@@ -80,6 +80,7 @@ export interface ViewTaskModalProps {
         deadline: Dayjs | null;
         assignedUser: string;
     } | null;
+    disableSubtaskAdd: boolean;
 }
 
 export interface ProjectViewData {

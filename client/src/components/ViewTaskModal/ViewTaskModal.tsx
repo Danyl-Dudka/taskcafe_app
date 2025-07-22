@@ -4,16 +4,24 @@ import './viewTaskModal.css';
 import type { Subtask, ViewTaskModalProps } from "../types.tsx";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-export default function ViewTaskModal({ open, onCancel, task }: ViewTaskModalProps) {
+export default function ViewTaskModal({ open, onCancel, task, disableSubtaskAdd }: ViewTaskModalProps) {
     const [subTasks, setSubTasks] = useState<Subtask[]>([]);
     const [subTaskName, setSubTaskName] = useState<string>('');
     const [subTaskDescription, setSubTaskDescription] = useState<string>('');
+    const [isActive, setIsActive] = useState<boolean>(true);
 
     useEffect(() => {
+        setIsActive(false)
         if (open && task?.id) {
             fetchSubTasks();
         }
-    }, [open, task?.id])
+    }, [open, task?.id]);
+
+    const handleCancel = () => {
+        setSubTaskName('');
+        setSubTaskDescription('');
+        setIsActive(false)
+    }
 
     const fetchSubTasks = async () => {
         const token = sessionStorage.getItem('token');
@@ -59,7 +67,9 @@ export default function ViewTaskModal({ open, onCancel, task }: ViewTaskModalPro
             if (response.ok) {
                 setSubTaskName('');
                 setSubTaskDescription('');
-                toast.success('Subtask added!')
+                toast.success('Subtask added!');
+                fetchSubTasks();
+                setIsActive(false)
             }
 
         } catch (error) {
@@ -68,39 +78,54 @@ export default function ViewTaskModal({ open, onCancel, task }: ViewTaskModalPro
         }
     }
 
-
     return (
         <Modal
             title={task?.name || 'Project Details'}
             open={open}
-            onCancel={onCancel}
+            onCancel={() => { onCancel(); setIsActive(false); }}
             footer={null}
             centered
-            wrapClassName="taskcafe-modal"
+            transitionName="fade-in-up"
+            maskTransitionName="fade-in-up"
         >
             <div className="subtask-form">
+                {isActive ? (
+                    <>
+                        <label className="input-label">Subtask Name</label>
+                        <Input
+                            value={subTaskName}
+                            onChange={(e) => setSubTaskName(e.target.value)}
+                            placeholder="Enter subtask name"
+                            className="input-field"
+                        />
 
-                <label className="input-label">Subtask Name</label>
-                <Input
-                    value={subTaskName}
-                    onChange={(e) => setSubTaskName(e.target.value)}
-                    placeholder="Enter subtask name"
-                    className="input-field"
-                />
+                        <label className="input-label">Subtask Description</label>
+                        <Input
+                            className="input-field"
+                            value={subTaskDescription}
+                            onChange={(e) => setSubTaskDescription(e.target.value)}
+                            placeholder="Enter subtask description"
+                        />
 
-                <label className="input-label">Subtask Description</label>
-                <Input
-                    className="input-field"
-                    value={subTaskDescription}
-                    onChange={(e) => setSubTaskDescription(e.target.value)}
-                    placeholder="Enter subtask description"
-                />
+                        <div className="control_buttons">
+                            <Button onClick={addSubTask}
+                                className="submit-button"
+                                type="primary">
+                                Save
+                            </Button>
 
-                <Button onClick={addSubTask}
-                    className="submit-button"
-                    type="primary">
-                    Add subtask
-                </Button>
+                            <Button onClick={handleCancel}
+                                className="cancel-button"
+                                danger>
+                                Cancel
+                            </Button>
+                        </div>
+                    </>
+                ) : (
+                    !disableSubtaskAdd && (
+                        <button type="button" className="add-subtask-btn" onClick={() => setIsActive(true)}>+ Add subtask</button>
+                    )
+                )}
             </div>
 
             <div className="subtask-list">
@@ -116,7 +141,7 @@ export default function ViewTaskModal({ open, onCancel, task }: ViewTaskModalPro
                     ))
                 )}
             </div>
-        </Modal>
+        </Modal >
     );
 
 }
