@@ -116,4 +116,5 @@ export type Subtask = {
     _id: string;
     subTaskName: string;
     subTaskDescription: string;
+    subTaskCompletingStatus: boolean;
 }

@@ -1,10 +1,10 @@
-// CLEAN
+// CLEAN ++ CHECKED
 import type { ProjectFormData, ProjectViewData } from "../types";
 import { useState, useEffect } from "react";
-import TaskList from "../TaskList/TaskList";
+import ProjectsList from "../ProjectsList/ProjectsList";
 import dayjs from "dayjs";
 import './completedProjectsPage.css'
-import ViewTaskModal from "../ViewTaskModal/ViewTaskModal";
+import SubtaskModal from "../SubtaskModal/SubtaskModal";
 export default function CompletedProjectsPage() {
     const [completedProjects, setCompletedProjects] = useState<ProjectFormData[]>([]);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -76,8 +76,8 @@ export default function CompletedProjectsPage() {
     return (
         <>
             <div className="taskapp_container">
-                <h2>Completed Tasks</h2>
-                <TaskList
+                <h2>Completed Projects</h2>
+                <ProjectsList
                     projects={completedProjects}
                     onView={openViewModal}
                     onEdit={handleEdit}
@@ -86,7 +86,7 @@ export default function CompletedProjectsPage() {
                 />
             </div>
 
-            <ViewTaskModal open={isViewModalOpen} onCancel={closeViewModal} task={viewTask} disableSubtaskAdd={true} />
+            <SubtaskModal open={isViewModalOpen} onCancel={closeViewModal} task={viewTask} disableSubtaskAdd={true} />
         </>
     )
 }

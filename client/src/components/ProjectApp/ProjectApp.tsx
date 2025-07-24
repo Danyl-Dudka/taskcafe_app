@@ -1,8 +1,9 @@
+// CLEAN ++ CHECKED
 import { useState, useEffect } from "react";
-import './TaskApp.css';
-import NewTaskModal from "../NewTaskModal/NewTaskModal.tsx";
-import ViewTaskModal from "../ViewTaskModal/ViewTaskModal.tsx";
-import TaskList from "../TaskList/TaskList";
+import './ProjectApp.css';
+import NewTaskModal from "../NewProjectModal/NewProjectModal.tsx";
+import SubtaskModal from "../SubtaskModal/SubtaskModal.tsx";
+import ProjectsList from "../ProjectsList/ProjectsList.tsx";
 import { type ModalMode, type ProjectFormData, type ProjectViewData } from "../types.tsx";
 import dayjs, { Dayjs } from "dayjs";
 import { v4 as uuidv4 } from 'uuid';
@@ -185,7 +186,7 @@ export default function TaskApp() {
             if (response.ok) {
                 setProjects([]);
                 setIsModalOpen(false);
-                toast.success(data.message || 'Tasks successfully deleted!')
+                toast.success(data.message || 'Projects successfully deleted!')
             } else {
                 toast.error(data.message || 'Failed to reset tasks');
             }
@@ -320,7 +321,7 @@ export default function TaskApp() {
                     <button type="button" className="reset_task_btn" onClick={showResetModal}>Reset projects</button>
                 </div>
             </div>
-            <TaskList projects={sortedProjects} onDelete={handleDeleteTask} onView={openViewModal} onEdit={handleEditTask} hideDeadline={false} />
+            <ProjectsList projects={sortedProjects} onDelete={handleDeleteTask} onView={openViewModal} onEdit={handleEditTask} hideDeadline={false} />
 
             {sortedProjects.length === 0 && (
                 <div className="no_result">No results</div>
@@ -349,7 +350,7 @@ export default function TaskApp() {
                 onCancel={handleCancel}
             />
 
-            <ViewTaskModal open={isViewModalOpen} onCancel={closeViewModal} task={viewTask} disableSubtaskAdd={false} />
+            <SubtaskModal open={isViewModalOpen} onCancel={closeViewModal} task={viewTask} disableSubtaskAdd={false} />
 
         </div>
     )

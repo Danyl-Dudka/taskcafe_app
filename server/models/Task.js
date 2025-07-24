@@ -34,7 +34,11 @@ const taskSchema = new mongoose.Schema({
   subtasks: [
     {
       subTaskName: { type: String, required: true },
-      subTaskDescription: {type: String, default: 'Subtask description is not provided'},
+      subTaskDescription: {
+        type: String,
+        default: "Subtask description is not provided",
+      },
+      subTaskCompletingStatus: { type: Boolean, default: false },
     },
   ],
 });

@@ -1,4 +1,4 @@
-// CLEAN
+// CLEAN ++ CHECKED
 
 import { useState } from 'react'
 import './SettingsPage.css';

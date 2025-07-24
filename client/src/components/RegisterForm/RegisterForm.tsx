@@ -1,4 +1,4 @@
-// CLEAN
+// CLEAN ++ CHECKED
 import { useState } from 'react';
 import type { FormErrors } from "../types.tsx";
 import registerSchema from '../validation/validationSchema';

@@ -165,6 +165,73 @@ app.post("/addSubtask", authenticateToken, async (req, res) => {
   }
 });
 
+app.put("/editSubtask", authenticateToken, async (req, res) => {
+  const { subtaskId, editedSubtaskName, editedSubtaskDescription } = req.body;
+  try {
+    const updatedSubtask = await Task.findOneAndUpdate(
+      { "subtasks._id": subtaskId },
+      {
+        $set: {
+          "subtasks.$.subTaskName": editedSubtaskName,
+          "subtasks.$.subTaskDescription": editedSubtaskDescription,
+        },
+      }
+    );
+    if (!updatedSubtask) {
+      return res
+        .status(404)
+        .send({ message: "Subtask to update was not found!" });
+    }
+    res.json({ message: "Subtask has been successfully updated!" });
+  } catch (error) {
+    res.status(500).send({ message: "Server error!" });
+  }
+});
+
+app.delete("/deleteSubtask", authenticateToken, async (req, res) => {
+  const subtaskIdToDelete = req.query.subtaskIdToDelete;
+  try {
+    const subtaskToDelete = await Task.findOneAndUpdate(
+      {
+        "subtasks._id": subtaskIdToDelete,
+      },
+      { $pull: { subtasks: { _id: subtaskIdToDelete } } }
+    );
+
+    if (!subtaskToDelete) {
+      return res
+        .status(404)
+        .send({ message: "Subtask to delete was not found" });
+    }
+    res.json({ message: "Subtask has been successfully deleted!" });
+  } catch (error) {
+    res.status(500).send({ message: "Server error!" });
+  }
+});
+
+app.put("/completeSubtask", authenticateToken, async (req, res) => {
+  const { subtaskId } = req.body;
+
+  try {
+    const subtaskToComplete = await Task.findOneAndUpdate(
+      { "subtasks._id": subtaskId },
+      {
+        $set: {
+          "subtasks.$.subTaskCompletingStatus": true,
+        },
+      }
+    );
+    if (!subtaskToComplete) {
+      return res
+        .status(404)
+        .send({ message: "Subtask to complete was not found!" });
+    }
+    res.json({ message: "Subtask has been successfully completed!" });
+  } catch (error) {
+    res.status(500).send({ message: "Server error!" });
+  }
+});
+
 app.get("/getSubtasks", authenticateToken, async (req, res) => {
   const userId = req.user.userId;
   const taskId = req.query.taskId;
@@ -180,7 +247,6 @@ app.get("/getSubtasks", authenticateToken, async (req, res) => {
     }
 
     res.json(task.subtasks || []);
-    
   } catch (error) {
     console.error("Error fetching subtasks: ", error);
     res.status(500).json({ message: "Server error!" });
@@ -219,7 +285,7 @@ app.post("/resetTasks", authenticateToken, async (req, res) => {
     }
 
     await Task.deleteMany({ user: userId });
-    res.status(200).json({ message: "All tasks deleted successfully!" });
+    res.status(200).json({ message: "All projects deleted successfully!" });
   } catch (error) {
     res.status(500).json({ message: "Failed to delete tasks: ", error });
   }

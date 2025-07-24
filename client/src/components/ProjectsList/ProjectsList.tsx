@@ -1,5 +1,5 @@
-// CLEAN
-import './taskList.css';
+// CLEAN ++ CHECKED
+import './projectsList.css';
 import type { ProjectListProps } from '../types.tsx';
 import dayjs from 'dayjs';
 import { Radio, Select } from 'antd';
@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import { toast } from "react-toastify";
 import { statusLabels } from '../types.tsx';
 import type { User } from '../types.tsx';
-import DeleteConfirmModal from '../DeleteConfirmModal/DeleteConfirmModal';
+import DeleteConfirmModal from '../DeleteConfirmModal/DeleteConfirmModal.tsx';
 export default function TaskList({ projects, onDelete, onView, onEdit, hideDeadline }: ProjectListProps & { onView: (project: any) => void }) {
 
     const [editingTask, setEditingTask] = useState<any | null>(null);

@@ -1,4 +1,4 @@
-// CLEAN
+// CLEAN ++ CHECKED
 import './header.css';
 import { useNavigate } from 'react-router';
 import { BadgeCheck, Home } from 'lucide-react';
@@ -33,17 +33,12 @@ export default function Header() {
         },
         {
             key: '2',
-            label: 'Profile',
-            extra: '⌘P',
-        },
-        {
-            key: '3',
             label: 'Settings',
             icon: <SettingOutlined />,
             onClick: () => settingsNavigate(),
         },
         {
-            key: '4',
+            key: '3',
             label: 'Sign out',
             icon: <LogoutOutlined />,
             danger: true,

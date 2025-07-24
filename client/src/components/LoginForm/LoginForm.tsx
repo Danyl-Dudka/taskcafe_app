@@ -1,4 +1,4 @@
-// CLEAN
+// CLEAN ++ CHECKED
 import { useContext, useState } from "react";
 import { AuthContext } from "../../content";
 import './LoginForm.css';

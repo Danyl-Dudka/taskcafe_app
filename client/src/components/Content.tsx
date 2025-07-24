@@ -2,7 +2,7 @@
 import { AuthContext } from "../content";
 import { useContext } from "react";
 import LoginForm from "./LoginForm/LoginForm";
-import TaskApp from "./TaskApp/TaskApp";
+import ProjectApp from "./ProjectApp/ProjectApp";
 import SettingsPage from "./SettingsPage/SettingsPage";
 import { Route, Routes, Navigate } from "react-router-dom";
 import Header from "./Header/Header";
@@ -17,7 +17,7 @@ export default function Content() {
             <Routes>
                 <Route
                     path="/"
-                    element={isAuth ? <TaskApp /> : <Navigate to="/login" />} />
+                    element={isAuth ? <ProjectApp /> : <Navigate to="/login" />} />
                 <Route path="/registration"
                     element={isAuth ? <Navigate to="/" /> : <RegisterForm />} />
                 <Route

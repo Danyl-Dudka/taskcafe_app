@@ -1,6 +1,6 @@
-// CLEAN
+// CLEAN ++ CHECKED
 import { Modal, Input, Button, DatePicker, Select } from "antd";
-import './newTaskModal.css';
+import './newProjectModal.css';
 import { type User, type NewTaskModalProps } from "../types.tsx";
 export type ModalMode = 'create' | 'reset' | 'view';
 import { newTodoSchema } from "../validation/validationSchema.ts";
