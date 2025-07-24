@@ -184,6 +184,12 @@ export default function ViewTaskModal({ open, onCancel, task, disableSubtaskAdd 
         }
     }
 
+    const handleEditClick = (subtask: Subtask) => {
+        setEditingSubtask(subtask);
+        setEditedSubtaskName(subtask.subTaskName);
+        setEditedSubtaskDescription(subtask.subTaskDescription);
+    }
+
     const confirmDeleteSubtask = (id: string) => {
         setSubtaskToDelete(id);
         setConfirmDeleteModalOpen(true);
@@ -299,9 +305,7 @@ export default function ViewTaskModal({ open, onCancel, task, disableSubtaskAdd 
                                 </div>
                                 <div className="subtask-actions">
                                     <button type="button" className="edit_subtask_btn" onClick={() => {
-                                        setEditingSubtask(subtask);
-                                        setEditedSubtaskName(subtask.subTaskName);
-                                        setEditedSubtaskDescription(subtask.subTaskDescription);
+                                        handleEditClick(subtask)
                                     }}>
                                         <SquarePen className='pen_icon' color='black' size={14} />
                                     </button>
